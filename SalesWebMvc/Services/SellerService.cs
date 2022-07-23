@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using SalesWebMvc.Services.Exceptions;
+using SalesWebMvc.Services;
 using SalesWebMvc.Data;
 using SalesWebMvc.Controllers;
 
@@ -45,7 +45,7 @@ namespace SalesWebMvc.Services
             }
             catch (DbUpdateException e)
             {
-                throw new IntegrityException("Can't delete seller because he/she has sales");
+                throw new IntegrityException(e.Message);
             }
         }
 
@@ -54,7 +54,7 @@ namespace SalesWebMvc.Services
             bool hasAny = await _context.Seller.AnyAsync(x => x.Id == obj.Id);
             if (!hasAny)
             {
-                throw new NotFoundException("Id not found");
+                throw new IntegrityException("Id not found");
             }
             try
             {
@@ -63,7 +63,7 @@ namespace SalesWebMvc.Services
             }
             catch (DbUpdateConcurrencyException e)
             {
-                throw new DbConcurrencyException(e.Message);
+                throw new IntegrityException(e.Message);
             }
         }
     }
